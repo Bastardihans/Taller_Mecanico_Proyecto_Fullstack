@@ -8,6 +8,8 @@ import com.example.clienteservice.dto.response.ClienteResponseDTO;
 import com.example.clienteservice.model.ClienteModel;
 import com.example.clienteservice.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -61,7 +63,7 @@ public class ClienteService {
     }
 
     // Actualizar cliente
-    public ClienteModel actualizar(Long id, ClienteModel request) {
+    public ClienteModel actualizar(Long id, ClienteRequestDTO request) {
 
         ClienteModel existente = clienteRepository.findById(id)
                 .orElseThrow(() ->

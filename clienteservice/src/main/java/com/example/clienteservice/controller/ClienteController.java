@@ -43,7 +43,15 @@ public class ClienteController {
         );
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ClienteModel> actualizar(
+        @PathVariable Long id,
+        @RequestBody ClienteRequestDTO request) {
 
+    return ResponseEntity.ok(
+            clienteService.actualizar(id, request)
+    );
+}
 
 
 
@@ -60,6 +68,7 @@ public class ClienteController {
             .body("Cliente no encontrado");
     }   
 
+    
     @GetMapping
     public ResponseEntity<?> listarClientes() {
         return ResponseEntity.ok(clienteService.obtenerTodos());
