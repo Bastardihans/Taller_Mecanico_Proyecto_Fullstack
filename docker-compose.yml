@@ -96,11 +96,202 @@ services:
       - "8082:8082"
     networks:
       - taller-net
+<<<<<<< HEAD
+=======
+########################################################################################################
+##################################### AGENDA SERVICE ###################################################
+########################################################################################################
+  mysql-agenda:
+    image: mysql:8.0
+    container_name: mysql-agenda
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: agenda_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3310:3306"  # Usamos el puerto 3310 porque Hans ya ocupó el 3307, 3308 y 3309
+    volumes:
+      - mysql_agenda_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  agenda-service:
+    build: ./agendaservice   # <- Ap頼a a la carpeta que acabas de pegar
+    container_name: agenda-service
+    restart: always
+    depends_on:
+      - mysql-agenda
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-agenda:3306/agenda_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8083:8083"  # Tu servicio correrá en el puerto 8083 para no chocar con los de Hans
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### SERVICIO SERVICE #################################################
+########################################################################################################
+
+  mysql-servicio:
+    image: mysql:8.0
+    container_name: mysql-servicio
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: servicio_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3311:3306"  # Puerto 3311 para evitar colisiones en tu PC
+    volumes:
+      - mysql_servicio_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  servicio-service:
+    build: ./servicioservice # Apunta a tu nueva carpeta
+    container_name: servicio-service
+    restart: always
+    depends_on:
+      - mysql-servicio
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-servicio:3306/servicio_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8084:8084"  # Correrá en el puerto 8084
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### NOTIFICACION SERVICE #############################################
+########################################################################################################
+
+  mysql-notificacion:
+    image: mysql:8.0
+    container_name: mysql-notificacion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notificacion_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3312:3306"  # Puerto 3312 para la BD de notificaciones
+    volumes:
+      - mysql_notificacion_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  notificacion-service:
+    build: ./notificacionservice # Apunta a tu nueva carpeta comprimida e integrada
+    container_name: notificacion-service
+    restart: always
+    depends_on:
+      - mysql-notificacion
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-notificacion:3306/notificacion_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8085:8085"  # Este servicio operará de forma independiente en el puerto 8085
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### FACTURACION SERVICE ##############################################
+########################################################################################################
+
+  mysql-facturacion:
+    image: mysql:8.0
+    container_name: mysql-facturacion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: facturacion_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_facturacion_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  facturacion-service:
+    build: ./facturacionservice
+    container_name: facturacion-service
+    restart: always
+    depends_on:
+      - mysql-facturacion
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-facturacion:3306/facturacion_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      # CONFIGURACIÓN CRUCIAL DE LAS PPTs: Mapeamos las direcciones internas de la red de Docker
+      ORDEN_SERVICE_URL: http://orden-service:8082
+      SERVICIO_SERVICE_URL: http://servicio-service:8084
+    ports:
+      - "8086:8086" # Correrá de forma independiente en el puerto 8086
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### SEGURIDAD SERVICE ################################################
+########################################################################################################
+
+  mysql-seguridad:
+    image: mysql:8.0
+    container_name: mysql-seguridad
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: seguridad_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3314:3306"
+    volumes:
+      - mysql_seguridad_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  seguridad-service:
+    build: ./seguridadservice
+    container_name: seguridad-service
+    restart: always
+    depends_on:
+      - mysql-seguridad
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-seguridad:3306/seguridad_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8087:8087" # Este servicio correrá de forma independiente en el puerto 8087
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### VOLUMENES ########################################################
+########################################################################################################
+>>>>>>> 368512d (Feat: Implementación de los 5 microservicios de Carlos con documentación y Docker)
 
 volumes:
   mysql_data:
   mysql_cliente_data:
   mysql_mecanico_data:
+<<<<<<< HEAD
+=======
+  mysql_agenda_data: # AgendaService
+  mysql_servicio_data: # ServicioService
+  mysql_notificacion_data: # NotificacionService
+  mysql_facturacion_data: # facturacionService
+  mysql_seguridad_data: # SeguridadService
+>>>>>>> 368512d (Feat: Implementación de los 5 microservicios de Carlos con documentación y Docker)
 
 networks:
   taller-net:
