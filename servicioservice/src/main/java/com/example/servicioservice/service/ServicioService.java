@@ -1,14 +1,16 @@
 package com.example.servicioservice.service;
 
 import java.util.List;
-import java.util.stream.Collectors; 
+import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Service; 
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import com.example.servicioservice.dto.ServicioRequestDTO;
 import com.example.servicioservice.dto.ServicioResponseDTO;
-import com.example.servicioservice.model.ServicioModel; 
-import com.example.servicioservice.repository.ServicioRepository; 
+import com.example.servicioservice.model.ServicioModel;
+import com.example.servicioservice.repository.ServicioRepository;
 
 @Service // 1. Le avisa a Spring que aquí se programa la lógica de negocio del catálogo
 public class ServicioService {
@@ -45,5 +47,42 @@ public class ServicioService {
         return listaModelos.stream()
                 .map(modelo -> new ServicioResponseDTO(modelo.getId(), modelo.getNombre(), modelo.getDescripcion(), modelo.getPrecioBase()))
                 .collect(Collectors.toList());
+    }
+
+    public ServicioResponseDTO obtenerServicioPorId(Long id) {
+        ServicioModel servicio = servicioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Servicio no encontrado"));
+
+        return new ServicioResponseDTO(
+                servicio.getId(),
+                servicio.getNombre(),
+                servicio.getDescripcion(),
+                servicio.getPrecioBase()
+        );
+    }
+
+    public ServicioResponseDTO actualizarServicio(Long id, ServicioRequestDTO request) {
+        ServicioModel existente = servicioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Servicio no encontrado"));
+
+        existente.setNombre(request.getNombre());
+        existente.setDescripcion(request.getDescripcion());
+        existente.setPrecioBase(request.getPrecioBase());
+
+        ServicioModel actualizado = servicioRepository.save(existente);
+        return new ServicioResponseDTO(
+                actualizado.getId(),
+                actualizado.getNombre(),
+                actualizado.getDescripcion(),
+                actualizado.getPrecioBase()
+        );
+    }
+
+    public boolean eliminarServicio(Long id) {
+        if (!servicioRepository.existsById(id)) {
+            return false;
+        }
+        servicioRepository.deleteById(id);
+        return true;
     }
 }

@@ -66,7 +66,7 @@ services:
 
   vehiculo-service:
     build:
-      context: ./VehiculoService  
+      context: ./vehiculoservice
       dockerfile: Dockerfile
     container_name: vehiculo-service
     restart: always
@@ -78,7 +78,7 @@ services:
       - DB_NAME=taller_db
       - DB_USER=admin
       - DB_PASSWORD=admin123
-      - CLIENTE_SERVICE_URL=http://cliente-service:8081 # <-- ¡ESTA ES LA LÍNEA CLAVE!
+      - CLIENTE_SERVICE_URL=http://cliente-service:8081
     depends_on:
       - mysql
     networks:
@@ -96,6 +96,45 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin123
     ports:
       - "8092:8082" # <-- CORREGIDO: Cambiado puerto externo a 8092 para evitar el choque
+    networks:
+      - taller-net
+
+  mysql-ordenes:
+    image: mysql:8.0
+    container_name: mysql-ordenes
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ordenes_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_ordenes_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  ordentrabajoservice:
+    build:
+      context: ./ordentrabajoservice
+      dockerfile: Dockerfile.java
+    container_name: ordentrabajoservice
+    restart: always
+    depends_on:
+      - mysql-ordenes
+      - vehiculo-service
+      - mecanico-service
+      - cliente-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-ordenes:3306/ordenes_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      VEHICULO_SERVICE_URL: http://vehiculo-service:8080
+      MECANICO_SERVICE_URL: http://mecanico-service:8082
+      CLIENTE_SERVICE_URL: http://cliente-service:8081
+    ports:
+      - "8088:8083"
     networks:
       - taller-net
 
@@ -234,7 +273,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-facturacion:3306/facturacion_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
-      ORDEN_SERVICE_URL: http://mecanico-service:8082
+      ORDEN_SERVICE_URL: http://ordentrabajoservice:8083
       SERVICIO_SERVICE_URL: http://servicio-service:8084
     ports:
       - "8086:8086"
@@ -284,6 +323,7 @@ volumes:
   mysql_data:
   mysql_cliente_data:
   mysql_mecanico_data:
+  mysql_ordenes_data:
   mysql_agenda_data:
   mysql_servicio_data:
   mysql_notificacion_data:

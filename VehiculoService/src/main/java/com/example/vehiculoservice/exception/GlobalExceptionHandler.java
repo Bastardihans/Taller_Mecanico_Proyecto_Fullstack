@@ -32,10 +32,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    // Atrapalotodo para errores generales (Imprime la traza completa en la terminal de Docker)
+    // Atrapalotodo para errores generales
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> manejarErrorGeneral(Exception ex, HttpServletRequest request) {
-        ex.printStackTrace(); // <-- CRUCIAL: Muestra el error real en la terminal negra de Docker
+        // Se recomienda loguear la excepción en producción.
 
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(), 

@@ -25,7 +25,17 @@ public class OrdenTrabajoController {
     public ResponseEntity<List<OrdenTrabajoModel>> obtenerTodas() {
 
         return ResponseEntity.ok(
-                ordenTrabajoService.obtenerTodos()
+                ordenTrabajoService.obtenerTodas()
+        );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OrdenTrabajoResponseDTO> actualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody OrdenTrabajoRequestDTO request
+    ) {
+        return ResponseEntity.ok(
+                ordenTrabajoService.actualizar(id, request)
         );
     }
 

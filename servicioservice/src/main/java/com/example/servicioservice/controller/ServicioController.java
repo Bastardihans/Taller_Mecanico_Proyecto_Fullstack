@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping; // Habilita la revisión de las validaciones del DTO (@NotBlank, @Positive)
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping; // Importa los códigos de estado HTTP
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody; // Importa la clase de control total HTTP de la PPT
 import org.springframework.web.bind.annotation.RequestMapping; // Importa las anotaciones de las rutas REST
 import org.springframework.web.bind.annotation.RestController;
@@ -44,5 +47,33 @@ public class ServicioController {
         
         // 8. Respondemos con un código 200 OK porque es una consulta de lectura exitosa
         return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ServicioResponseDTO> obtenerServicioPorId(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(
+                servicioService.obtenerServicioPorId(id)
+        );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ServicioResponseDTO> actualizarServicio(
+            @PathVariable Long id,
+            @Valid @RequestBody ServicioRequestDTO request
+    ) {
+        return ResponseEntity.ok(
+                servicioService.actualizarServicio(id, request)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminarServicio(@PathVariable Long id) {
+        boolean eliminado = servicioService.eliminarServicio(id);
+        if (eliminado) {
+            return ResponseEntity.ok("Servicio eliminado");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Servicio no encontrado");
     }
 }

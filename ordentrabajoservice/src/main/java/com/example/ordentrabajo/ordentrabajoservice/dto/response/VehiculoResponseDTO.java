@@ -1,10 +1,14 @@
 package com.example.ordentrabajo.ordentrabajoservice.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VehiculoResponseDTO {
 
     private Long id;

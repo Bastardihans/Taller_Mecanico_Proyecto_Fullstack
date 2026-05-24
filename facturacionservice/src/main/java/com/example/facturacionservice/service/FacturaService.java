@@ -8,8 +8,10 @@ import com.example.facturacionservice.client.OrdenClient;
 import com.example.facturacionservice.client.ServicioClient;
 import com.example.facturacionservice.dto.FacturaRequestDTO;
 import com.example.facturacionservice.dto.FacturaResponseDTO;
+import com.example.facturacionservice.dto.FacturaUpdateDTO;
 import com.example.facturacionservice.dto.OrdenResponseDTO;
 import com.example.facturacionservice.dto.ServicioResponseDTO;
+import com.example.facturacionservice.exceptions.FacturaNotFoundException;
 import com.example.facturacionservice.model.FacturaModel;
 import com.example.facturacionservice.repository.FacturaRepository;
 
@@ -59,5 +61,54 @@ public class FacturaService {
                 guardada.getEstadoPago(),
                 guardada.getFechaEmision()
         );
+    }
+
+    public java.util.List<FacturaResponseDTO> obtenerTodas() {
+        return facturaRepository.findAll().stream()
+                .map(factura -> new FacturaResponseDTO(
+                        factura.getId(),
+                        factura.getOrdenId(),
+                        factura.getMontoTotal(),
+                        factura.getEstadoPago(),
+                        factura.getFechaEmision()
+                ))
+                .toList();
+    }
+
+    public FacturaResponseDTO obtenerPorId(Long id) {
+        FacturaModel factura = facturaRepository.findById(id)
+                .orElseThrow(() -> new FacturaNotFoundException(id));
+
+        return new FacturaResponseDTO(
+                factura.getId(),
+                factura.getOrdenId(),
+                factura.getMontoTotal(),
+                factura.getEstadoPago(),
+                factura.getFechaEmision()
+        );
+    }
+
+    public FacturaResponseDTO actualizarEstadoPago(Long id, FacturaUpdateDTO request) {
+        FacturaModel existente = facturaRepository.findById(id)
+                .orElseThrow(() -> new FacturaNotFoundException(id));
+
+        existente.setEstadoPago(request.getEstadoPago());
+        FacturaModel actualizado = facturaRepository.save(existente);
+
+        return new FacturaResponseDTO(
+                actualizado.getId(),
+                actualizado.getOrdenId(),
+                actualizado.getMontoTotal(),
+                actualizado.getEstadoPago(),
+                actualizado.getFechaEmision()
+        );
+    }
+
+    public boolean eliminar(Long id) {
+        if (!facturaRepository.existsById(id)) {
+            return false;
+        }
+        facturaRepository.deleteById(id);
+        return true;
     }
 }

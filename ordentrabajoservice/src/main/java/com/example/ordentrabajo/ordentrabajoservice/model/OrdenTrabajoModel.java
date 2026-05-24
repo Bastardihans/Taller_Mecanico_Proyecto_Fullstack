@@ -26,6 +26,13 @@ public class OrdenTrabajoModel {
     @Column(nullable = false)
     private Long mecanicoId;
 
+    // Relación lógica con ServicioService
+    @Column
+    private Long servicioId;
+
+    @Column
+    private Double costoRepuestos;
+
     @Column(nullable = false)
     private LocalDateTime fechaIngreso;
 

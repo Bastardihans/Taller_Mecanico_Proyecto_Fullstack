@@ -33,9 +33,7 @@ public class VehiculoService {
         try {
             clienteClient.obtenerClientePorId(request.getClienteId());
         } catch (Exception e) {
-            // ⬇️ ESTA LÍNEA ES NUEVA: Nos dirá qué rompió a Feign exactamente ⬇️
-            e.printStackTrace(); 
-            throw new IllegalArgumentException("El cliente con ID " + request.getClienteId() + " no existe en el sistema o el servicio externo está caído.");
+            throw new IllegalArgumentException("El cliente con ID " + request.getClienteId() + " no existe en el sistema o el servicio externo está caído.", e);
         }
 
         // 3. Mapear DTO a Entidad pura de base de datos

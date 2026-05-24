@@ -59,6 +59,8 @@ public class OrdenTrabajoService {
         OrdenTrabajoModel orden = OrdenTrabajoModel.builder()
                 .vehiculoId(request.getVehiculoId())
                 .mecanicoId(request.getMecanicoId())
+                .servicioId(request.getServicioId())
+                .costoRepuestos(request.getCostoRepuestos())
                 .fechaIngreso(LocalDateTime.now())
                 .descripcionFalla(request.getDescripcionFalla())
                 .estado("PENDIENTE")
@@ -90,6 +92,8 @@ public class OrdenTrabajoService {
 
         existente.setVehiculoId(request.getVehiculoId());
         existente.setMecanicoId(request.getMecanicoId());
+        existente.setServicioId(request.getServicioId());
+        existente.setCostoRepuestos(request.getCostoRepuestos());
         existente.setDescripcionFalla(
                 request.getDescripcionFalla()
         );
@@ -137,17 +141,14 @@ public class OrdenTrabajoService {
                 .id(orden.getId())
                 .vehiculoId(orden.getVehiculoId())
                 .mecanicoId(orden.getMecanicoId())
+                .servicioId(orden.getServicioId())
+                .costoRepuestos(orden.getCostoRepuestos())
                 .fechaIngreso(orden.getFechaIngreso())
                 .descripcionFalla(orden.getDescripcionFalla())
                 .estado(orden.getEstado())
                 .build();
     }
 
-    // LISTAR TODAS
-    public List<OrdenTrabajoModel> obtenerTodos() {
-
-        return ordenTrabajoRepository.findAll();
-    }
 
     // BUSCAR POR VEHICULO
     public List<OrdenTrabajoModel> obtenerPorVehiculo(

@@ -1,4 +1,4 @@
-package com.example.clienteservice.dto.response;
+package com.example.vehiculoservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClienteResponseDTO {
-
     private Long id;
     private String rut;
     private String nombre;
@@ -18,6 +17,4 @@ public class ClienteResponseDTO {
     private String telefono;
     private String correo;
     private String direccion;
-
-    
 }

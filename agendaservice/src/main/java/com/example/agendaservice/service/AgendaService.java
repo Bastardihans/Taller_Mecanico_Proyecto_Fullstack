@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import com.example.agendaservice.client.ClienteClient; // 1. Importamos el teléfono virtual de Feign
 import com.example.agendaservice.dto.AgendaRequestDTO;
 import com.example.agendaservice.dto.AgendaResponseDTO; 
-import com.example.agendaservice.dto.ClienteResponseDTO;// 2. Importamos el DTO del cliente de Hans
 import com.example.agendaservice.model.AgendaModel;
 import com.example.agendaservice.repository.AgendaRepository;
 
@@ -25,7 +24,7 @@ public class AgendaService {
         
         try {
             // 7. ¡LA LLAMADA CRUCIAL! Usamos Feign para ir a buscar al cliente en el servicio de Hans en tiempo real
-            ClienteResponseDTO clienteEncontrado = clienteClient.obtenerClientePorId(request.getClienteId());
+            clienteClient.obtenerClientePorId(request.getClienteId());
             
             // Si la línea de arriba no falla, significa que el cliente SÍ existe en el taller. Continuamos...
             

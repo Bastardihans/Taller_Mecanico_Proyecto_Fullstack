@@ -7,6 +7,7 @@ import com.example.clienteservice.dto.request.ClienteRequestDTO;
 import com.example.clienteservice.dto.response.ClienteResponseDTO;
 import com.example.clienteservice.service.ClienteService;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class ClienteController {
     // CREAR CLIENTE
     @PostMapping
     public ResponseEntity<ClienteResponseDTO> guardar(
-            @RequestBody ClienteRequestDTO request
+            @Valid @RequestBody ClienteRequestDTO request
     ) {
 
         ClienteResponseDTO nuevo = clienteService.guardar(request);
@@ -46,7 +47,7 @@ public class ClienteController {
     @PutMapping("/{id}")
     public ResponseEntity<ClienteModel> actualizar(
         @PathVariable Long id,
-        @RequestBody ClienteRequestDTO request) {
+        @Valid @RequestBody ClienteRequestDTO request) {
 
     return ResponseEntity.ok(
             clienteService.actualizar(id, request)

@@ -46,6 +46,16 @@ public class MecanicoController {
                 .body(mecanicoService.guardar(request));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<MecanicoResponseDTO> actualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody MecanicoRequestDTO request
+    ) {
+        return ResponseEntity.ok(
+                mecanicoService.actualizar(id, request)
+        );
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminar(@PathVariable Long id) {
 
