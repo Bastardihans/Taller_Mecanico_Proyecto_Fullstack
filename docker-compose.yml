@@ -208,6 +208,37 @@ services:
     networks:
       - taller-net
 
+  mysql-repuestos:
+    image: mysql:8.0
+    container_name: mysql-repuestos
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: repuestos_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3317:3306"
+    volumes:
+      - mysql_repuestos_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  repuestos-service:
+    build: ./respuestoservice
+    container_name: repuestos-service
+    restart: always
+    depends_on:
+      - mysql-repuestos
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-repuestos:3306/repuestos_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8089:8089"
+    networks:
+      - taller-net
+
 ########################################################################################################
 ##################################### NOTIFICACION SERVICE #############################################
 ########################################################################################################
@@ -326,6 +357,7 @@ volumes:
   mysql_ordenes_data:
   mysql_agenda_data:
   mysql_servicio_data:
+  mysql_repuestos_data:
   mysql_notificacion_data:
   mysql_facturacion_data:
   mysql_seguridad_data:
