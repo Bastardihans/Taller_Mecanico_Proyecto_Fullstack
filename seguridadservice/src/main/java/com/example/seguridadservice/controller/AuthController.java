@@ -1,9 +1,11 @@
 package com.example.seguridadservice.controller;
 
 import com.example.seguridadservice.dto.LoginRequestDTO;
+import com.example.seguridadservice.dto.RegisterRequestDTO;
 import com.example.seguridadservice.dto.TokenResponseDTO;
 import com.example.seguridadservice.service.AuthService;
 import jakarta.validation.Valid; // Activa validaciones del Bean Validation
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity; // Contenedor de respuestas completas HTTP de la PPT
 import org.springframework.web.bind.annotation.*;
 
@@ -24,5 +26,11 @@ public class AuthController {
         
         // 4. Respondemos con un código HTTP 200 OK adjuntando el token JWT generado
         return ResponseEntity.ok(respuestaToken);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<TokenResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request) {
+        TokenResponseDTO respuestaToken = authService.registrar(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(respuestaToken);
     }
 }

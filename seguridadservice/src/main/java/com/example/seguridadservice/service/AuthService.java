@@ -1,6 +1,7 @@
 package com.example.seguridadservice.service;
 
 import com.example.seguridadservice.dto.LoginRequestDTO;
+import com.example.seguridadservice.dto.RegisterRequestDTO;
 import com.example.seguridadservice.dto.TokenResponseDTO;
 import com.example.seguridadservice.model.UsuarioModel;
 import com.example.seguridadservice.repository.UsuarioRepository;
@@ -15,10 +16,10 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder; // 2. Herramienta para contrastar claves encriptadas
 
     // 3. Inyección de dependencias por constructor
-    public AuthService(UsuarioRepository usuarioRepository, JwtService jwtService) {
+    public AuthService(UsuarioRepository usuarioRepository, JwtService jwtService, BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.jwtService = jwtService;
-        this.passwordEncoder = new BCryptPasswordEncoder(); // Inicializa el motor BCrypt
+        this.passwordEncoder = passwordEncoder;
     }
 
     public TokenResponseDTO autenticar(LoginRequestDTO request) {
@@ -35,6 +36,23 @@ public class AuthService {
         String tokenGenerado = jwtService.generarToken(usuario.getEmail(), usuario.getRol());
 
         // 7. Retornamos el Token envuelto en el DTO estructurado
+        return new TokenResponseDTO(tokenGenerado);
+    }
+
+    public TokenResponseDTO registrar(RegisterRequestDTO request) {
+        if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Error: El usuario ya se encuentra registrado.");
+        }
+
+        UsuarioModel nuevoUsuario = UsuarioModel.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .rol("ROLE_CLIENTE")
+                .build();
+
+        UsuarioModel guardado = usuarioRepository.save(nuevoUsuario);
+        String tokenGenerado = jwtService.generarToken(guardado.getEmail(), guardado.getRol());
+
         return new TokenResponseDTO(tokenGenerado);
     }
 }

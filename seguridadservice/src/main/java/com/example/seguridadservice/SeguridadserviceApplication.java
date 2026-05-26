@@ -17,11 +17,11 @@ public class SeguridadserviceApplication {
 	}
 
 	@Bean
-	public CommandLineRunner seedInitialUser(UsuarioRepository usuarioRepository) {
+	public CommandLineRunner seedInitialUser(UsuarioRepository usuarioRepository, BCryptPasswordEncoder passwordEncoder) {
 		return args -> {
 			String adminEmail = "admin@taller.com";
 			if (usuarioRepository.findByEmail(adminEmail).isEmpty()) {
-				String password = new BCryptPasswordEncoder().encode("Admin123!");
+				String password = passwordEncoder.encode("Admin123!");
 				UsuarioModel admin = UsuarioModel.builder()
 					.email(adminEmail)
 					.password(password)
