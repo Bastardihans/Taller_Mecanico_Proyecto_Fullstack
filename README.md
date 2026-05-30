@@ -26,7 +26,6 @@ La solución está diseñada como un ecosistema de microservicios desacoplados q
 - `API Gateway`: funciona como punto de entrada único para clientes externos, concentrando el ruteo de solicitudes y la aplicación de políticas de seguridad. Todo el tráfico de usuario debe ingresar por una única puerta de enlace antes de ser derivado a los microservicios internos.
 - `Service Discovery` con Eureka Server: cada microservicio puede registrarse dinámicamente para ser localizado sin hardcodear URLs. Eureka habilita la resolución de instancias y balanceo de carga en tiempo de ejecución.
 - Comunicación síncrona con `OpenFeign`: los microservicios que requieren datos de otros dominios usan clientes declarativos Feign para invocar APIs REST de forma tipada y controlada. Ejemplos claros son `ordentrabajoservice` consultando `vehiculo-service`, `mecanico-service` y `cliente-service`, y `facturacion-service` consultando `orden-service` y `servicio-service`.
-- Comunicación asincrónica con `Apache Kafka`: el diseño prevé replicación de datos mediante eventos de dominio, permitiendo que los servicios colaboren sin compartir tablas de base de datos. Los eventos Kafka garantizan consistencia eventual al propagar cambios de estado entre dominios independientes.
 
 ## Capa de Seguridad 
 
@@ -52,10 +51,7 @@ El proyecto utiliza patrones de diseño orientados a buenos principios de ingeni
 - Validación declarativa: `Spring Boot Starter Validation` se utiliza junto con anotaciones como `@Valid`, `@NotNull`, `@Size`, `@Email` y `@Pattern` para garantizar la integridad de los datos al recibir solicitudes.
 - Capas bien definidas: controlador, servicio, repositorio y adaptadores de integración.
 
-Pruebas automatizadas:
 
-- `JUnit 5` se utiliza para pruebas unitarias de lógica de negocio.
-- `Mockito` permite simular dependencias y verificar el comportamiento de servicios aislados.
 
 ## Guía de Instalación y Despliegue con Docker 
 
