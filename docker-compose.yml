@@ -1,0 +1,381 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-taller
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: taller_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3315:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  mysql-cliente:
+    image: mysql:8.0
+    container_name: mysql-cliente
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cliente_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_cliente_data:/var/lib/mysql
+    networks:
+      - taller-net
+  
+  mysql-mecanico:
+    image: mysql:8.0
+    container_name: mysql-mecanico
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mecanico_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_mecanico_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  cliente-service:
+    build:
+      context: ./clienteservice
+      dockerfile: Dockerfile
+    container_name: cliente-service
+    restart: always
+    depends_on:
+      - mysql-cliente
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-cliente:3306/cliente_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      VEHICULO_SERVICE_URL: http://vehiculo-service:8080 
+    ports:
+       - "8081:8081"
+    networks:
+      - taller-net
+
+  vehiculo-service:
+    build:
+      context: ./VehiculoService
+      dockerfile: Dockerfile
+    container_name: vehiculo-service
+    restart: always
+    ports:
+       - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=taller_db
+      - DB_USER=admin
+      - DB_PASSWORD=admin123
+      - CLIENTE_SERVICE_URL=http://cliente-service:8081
+    depends_on:
+      - mysql
+    networks:
+      - taller-net
+
+  mecanico-service:
+    build:
+      context: ./mecanicoservice
+      dockerfile: Dockerfile
+    container_name: mecanico-service
+    restart: always
+    depends_on:
+      - mysql-mecanico
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-mecanico:3306/mecanico_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8092:8082" # <-- CORREGIDO: Cambiado puerto externo a 8092 para evitar el choque
+    networks:
+      - taller-net
+
+  mysql-ordenes:
+    image: mysql:8.0
+    container_name: mysql-ordenes
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ordenes_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_ordenes_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  ordentrabajoservice:
+    build:
+      context: ./ordentrabajoservice
+      dockerfile: Dockerfile.java
+    container_name: ordentrabajoservice
+    restart: always
+    depends_on:
+      - mysql-ordenes
+      - vehiculo-service
+      - mecanico-service
+      - cliente-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-ordenes:3306/ordenes_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      VEHICULO_SERVICE_URL: http://vehiculo-service:8080
+      MECANICO_SERVICE_URL: http://mecanico-service:8082
+      CLIENTE_SERVICE_URL: http://cliente-service:8081
+    ports:
+      - "8088:8083"
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### AGENDA SERVICE ###################################################
+########################################################################################################
+  mysql-agenda:
+    image: mysql:8.0
+    container_name: mysql-agenda
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: agenda_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_agenda_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  agenda-service:
+    build:
+      context: ./agendaservice
+      dockerfile: dockerfile
+    container_name: agenda-service
+    restart: always
+    depends_on:
+      - mysql-agenda
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-agenda:3306/agenda_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      CLIENTE_SERVICE_URL: http://cliente-service:8081
+    ports:
+      - "8083:8083"
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### SERVICIO SERVICE #################################################
+########################################################################################################
+
+  mysql-servicio:
+    image: mysql:8.0
+    container_name: mysql-servicio
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: servicio_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_servicio_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  servicio-service:
+    build:
+      context: ./servicioservice
+      dockerfile: dockerfile
+    container_name: servicio-service
+    restart: always
+    depends_on:
+      - mysql-servicio
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-servicio:3306/servicio_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8084:8084"
+    networks:
+      - taller-net
+
+  mysql-repuestos:
+    image: mysql:8.0
+    container_name: mysql-repuestos
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: repuestos_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3317:3306"
+    volumes:
+      - mysql_repuestos_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  repuestos-service:
+    build: ./respuestoservice
+    container_name: repuestos-service
+    restart: always
+    depends_on:
+      - mysql-repuestos
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-repuestos:3306/repuestos_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8089:8089"
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### NOTIFICACION SERVICE #############################################
+########################################################################################################
+
+  mysql-notificacion:
+    image: mysql:8.0
+    container_name: mysql-notificacion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notificacion_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql_notificacion_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  notificacion-service:
+    build:
+      context: ./notificacionservice
+      dockerfile: dockerfile
+    container_name: notificacion-service
+    restart: always
+    depends_on:
+      - mysql-notificacion
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-notificacion:3306/notificacion_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8085:8085"
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### FACTURACION SERVICE ##############################################
+########################################################################################################
+
+  mysql-facturacion:
+    image: mysql:8.0
+    container_name: mysql-facturacion
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: facturacion_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_facturacion_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  facturacion-service:
+    build:
+      context: ./facturacionservice
+      dockerfile: dockerfile
+    container_name: facturacion-service
+    restart: always
+    depends_on:
+      - mysql-facturacion
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-facturacion:3306/facturacion_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      ORDEN_SERVICE_URL: http://ordentrabajoservice:8083
+      SERVICIO_SERVICE_URL: http://servicio-service:8084
+    ports:
+      - "8086:8086"
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### SEGURIDAD SERVICE ################################################
+########################################################################################################
+
+  mysql-seguridad:
+    image: mysql:8.0
+    container_name: mysql-seguridad
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: seguridad_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3314:3306"
+    volumes:
+      - mysql_seguridad_data:/var/lib/mysql
+    networks:
+      - taller-net
+
+  seguridad-service:
+    build:
+      context: ./seguridadservice
+      dockerfile: dockerfile
+    container_name: seguridad-service
+    restart: always
+    depends_on:
+      - mysql-seguridad
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-seguridad:3306/seguridad_db?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "8087:8087"
+    networks:
+      - taller-net
+
+########################################################################################################
+##################################### VOLUMENES Y REDES ################################################
+########################################################################################################
+
+volumes:
+  mysql_data:
+  mysql_cliente_data:
+  mysql_mecanico_data:
+  mysql_ordenes_data:
+  mysql_agenda_data:
+  mysql_servicio_data:
+  mysql_repuestos_data:
+  mysql_notificacion_data:
+  mysql_facturacion_data:
+  mysql_seguridad_data:
+
+networks:
+  taller-net:
+    driver: bridge
