@@ -1,5 +1,41 @@
 services:
 
+  eureka-server:
+    build:
+      context: ./eurekaserver
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - taller-net
+
+  api-gateway:
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: always
+    depends_on:
+      - eureka-server
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      CLIENTE_SERVICE_URL: http://cliente-service:8081
+      VEHICULO_SERVICE_URL: http://vehiculo-service:8080
+      MECANICO_SERVICE_URL: http://mecanico-service:8082
+      ORDENTRABAJO_SERVICE_URL: http://ordentrabajoservice:8083
+      AGENDA_SERVICE_URL: http://agenda-service:8083
+      SERVICIO_SERVICE_URL: http://servicio-service:8084
+      REPUESTO_SERVICE_URL: http://repuestos-service:8089
+      NOTIFICACION_SERVICE_URL: http://notificacion-service:8085
+      FACTURACION_SERVICE_URL: http://facturacion-service:8086
+      SEGURIDAD_SERVICE_URL: http://seguridad-service:8087
+    ports:
+      - "8080:8080"
+    networks:
+      - taller-net
+
   mysql:
     image: mysql:8.0
     container_name: mysql-taller
@@ -61,6 +97,7 @@ services:
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
       VEHICULO_SERVICE_URL: http://vehiculo-service:8080 
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
        - "8081:8081"
     networks:
@@ -72,8 +109,6 @@ services:
       dockerfile: Dockerfile
     container_name: vehiculo-service
     restart: always
-    ports:
-       - "8080:8080"
     environment:
       - DB_HOST=mysql
       - DB_PORT=3306
@@ -81,6 +116,9 @@ services:
       - DB_USER=admin
       - DB_PASSWORD=admin123
       - CLIENTE_SERVICE_URL=http://cliente-service:8081
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    ports:
+       - "18080:8080"
     depends_on:
       - mysql
     networks:
@@ -98,6 +136,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-mecanico:3306/mecanico_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8092:8082" # <-- CORREGIDO: Cambiado puerto externo a 8092 para evitar el choque
     networks:
@@ -137,6 +176,7 @@ services:
       VEHICULO_SERVICE_URL: http://vehiculo-service:8080
       MECANICO_SERVICE_URL: http://mecanico-service:8082
       CLIENTE_SERVICE_URL: http://cliente-service:8081
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8088:8083"
     networks:
@@ -174,6 +214,7 @@ services:
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
       CLIENTE_SERVICE_URL: http://cliente-service:8081
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8083:8083"
     networks:
@@ -211,6 +252,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-servicio:3306/servicio_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8084:8084"
     networks:
@@ -242,6 +284,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-repuestos:3306/repuestos_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8089:8089"
     networks:
@@ -279,6 +322,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-notificacion:3306/notificacion_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8085:8085"
     networks:
@@ -318,6 +362,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin123
       ORDEN_SERVICE_URL: http://ordentrabajoservice:8083
       SERVICIO_SERVICE_URL: http://servicio-service:8084
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8086:8086"
     networks:
@@ -355,6 +400,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-seguridad:3306/seguridad_db?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     ports:
       - "8087:8087"
     networks:
