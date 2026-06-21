@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable; // Importamos el ma
 import com.example.agendaservice.dto.ClienteResponseDTO;// Importamos la variable de ruta
 
 @FeignClient(
-    name = "cliente-service",        // 1. Nombre único del cliente Feign internamente en Spring
-    url = "${cliente.service.url}"   // 2. ¡CLAVE! Lee la URL de la variable de entorno de Docker que configuramos antes
+    name = "clienteservice"        // 1. Nombre único del cliente Feign internamente en Spring
 )
 public interface ClienteClient {
 

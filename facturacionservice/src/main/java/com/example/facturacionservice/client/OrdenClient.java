@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.facturacionservice.dto.OrdenResponseDTO;
 
-@FeignClient(name = "orden-service", url = "${orden.service.url}") // 1. Se conecta a la URL del servicio de Hans
+@FeignClient(name = "ordentrabajoservice") // 1. Se conecta a la URL del servicio de Hans
 public interface OrdenClient {
 
     @GetMapping("/api/v1/ordenes/{id}") // 2. Consulta la información de la orden de trabajo de un vehículo

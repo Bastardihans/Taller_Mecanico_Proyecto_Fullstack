@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 // Usamos el nombre que tu Service ya está importando (ClienteClient)
-@FeignClient(name = "cliente-service", url = "${cliente.service.url}")
+@FeignClient(name = "clienteservice")
 public interface ClienteClient {
 
     @GetMapping("/api/v1/clientes/{id}")

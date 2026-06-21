@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Taller Mecánico - API Gateway Swagger</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.21.0/swagger-ui.css">
+  <style>
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, #0b1220, #111827);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      padding: 16px 20px;
+    }
+
+    .topbar h1 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    #swagger-ui {
+      background: #fff;
+      min-height: calc(100vh - 76px);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Taller Mecánico - Documentación API</h1>
+    <p>Gateway: /swagger-ui.html | Eureka: http://localhost:8761</p>
+  </header>
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5.21.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.21.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function () {
+      window.ui = SwaggerUIBundle({
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        displayOperationId: false,
+        displayRequestDuration: true,
+        docExpansion: 'list',
+        filter: true,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        layout: 'StandaloneLayout',
+        urls: [
+          { name: 'clienteservice', url: '/api-docs/clienteservice' },
+          { name: 'vehiculo-service', url: '/api-docs/vehiculo-service' },
+          { name: 'mecanico-service', url: '/api-docs/mecanico-service' },
+          { name: 'ordentrabajoservice', url: '/api-docs/ordentrabajoservice' },
+          { name: 'agenda-service', url: '/api-docs/agenda-service' },
+          { name: 'servicio-service', url: '/api-docs/servicio-service' },
+          { name: 'respuestoservice', url: '/api-docs/respuestoservice' },
+          { name: 'notificacion-service', url: '/api-docs/notificacion-service' },
+          { name: 'facturacion-service', url: '/api-docs/facturacion-service' },
+          { name: 'seguridad-service', url: '/api-docs/seguridad-service' }
+        ],
+        urlsPrimaryName: 'clienteservice',
+        tryItOutEnabled: true
+      });
+    };
+  </script>
+</body>
+</html>

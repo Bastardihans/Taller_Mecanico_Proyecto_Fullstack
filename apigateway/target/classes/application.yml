@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - http://localhost:*
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    urls-primary-name: clienteservice
+    urls:
+      - name: clienteservice
+        url: /api-docs/clienteservice
+      - name: vehiculo-service
+        url: /api-docs/vehiculo-service
+      - name: mecanico-service
+        url: /api-docs/mecanico-service
+      - name: ordentrabajoservice
+        url: /api-docs/ordentrabajoservice
+      - name: agenda-service
+        url: /api-docs/agenda-service
+      - name: servicio-service
+        url: /api-docs/servicio-service
+      - name: respuestoservice
+        url: /api-docs/respuestoservice
+      - name: notificacion-service
+        url: /api-docs/notificacion-service
+      - name: facturacion-service
+        url: /api-docs/facturacion-service
+      - name: seguridad-service
+        url: /api-docs/seguridad-service
